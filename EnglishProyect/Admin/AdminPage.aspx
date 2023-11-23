@@ -1,17 +1,30 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AdminPage.aspx.cs" Inherits="EnglishProyect.Admin.AdminPage" %>
 
 <!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title></title>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Admin Page</title>
+    <!-- Agrega aquí tus enlaces a hojas de estilo (CSS) si es necesario -->
 </head>
 <body>
-    <form id="form1" runat="server">
+    <form runat="server">
+        <!-- Tabla para el primer semestre -->
         <div>
-            <asp:Label ID="lblAdmin" runat="server" Text="Hi Admin"></asp:Label>
+            <h3>First Semester</h3>
+            <asp:GridView ID="GridSemesterA" runat="server" AutoGenerateColumns="True"></asp:GridView>
         </div>
+
+        <!-- Tabla para el segundo semestre -->
+        <div>
+            <h3>Second Semester</h3>
+            <asp:GridView ID="GridSemesterB" runat="server" AutoGenerateColumns="True"></asp:GridView>
+        </div>
+
+        <!-- Puedes agregar más secciones según tus necesidades -->
+
     </form>
+
+    <!-- Agrega aquí tus enlaces a scripts de JavaScript si es necesario -->
 </body>
 </html>

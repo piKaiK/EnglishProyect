@@ -4,13 +4,28 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title></title>
+    <title>Teacher Page</title>
 </head>
 <body>
-    <form id="form1" runat="server">
+    <form runat="server">
+        <h2>Teacher Page</h2>
+
         <div>
-            <asp:Label ID="lblTeacher" runat="server" Text="Hi Teacher"></asp:Label>
+            <h3>Subjects Taught</h3>
+            <asp:Repeater ID="rptSubjects" runat="server">
+                <ItemTemplate>
+                    <div>
+                        <p>Subject Name: <%# Eval("Name") %></p>
+                        <!-- Add more details as needed -->
+                        <asp:Repeater ID="rptStudents" runat="server">
+                            <ItemTemplate>
+                                <p>Student: <%# Eval("StudentName") %></p>
+                                <!-- Add more student details as needed -->
+                            </ItemTemplate>
+                        </asp:Repeater>
+                    </div>
+                </ItemTemplate>
+            </asp:Repeater>
         </div>
     </form>
 </body>

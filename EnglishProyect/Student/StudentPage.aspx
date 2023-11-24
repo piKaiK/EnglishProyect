@@ -58,8 +58,9 @@
 
             <asp:Button ID="btnSave" runat="server" Text="Save Changes" OnClick="btnSave_Click" />
         </div>
-    </form>
 
-    <!-- Add your links to JavaScript scripts here if necessary -->
+        <asp:GridView ID="gridSubjects" runat="server" AutoGenerateColumns="True"></asp:GridView>
+
+    </form>
 </body>
 </html>

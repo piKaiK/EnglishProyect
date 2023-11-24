@@ -26,6 +26,7 @@ namespace EnglishProyect.Student
                 if (!string.IsNullOrEmpty(userId))
                 {
                     LoadStudentInformation(userId);
+                    LoadEnrolledSubjects(userId);
                 }
             }
         }
@@ -33,7 +34,7 @@ namespace EnglishProyect.Student
         private void LoadStudentInformation(string userId)
         {
             // Lógica para cargar la información del estudiante desde la base de datos
-            DataTable dt = GetStudentInformationFromDatabase(userId);
+            DataTable dt = GetStudentInformation(userId);
 
             if (dt.Rows.Count > 0)
             {
@@ -55,6 +56,15 @@ namespace EnglishProyect.Student
                 txtNationality.Text = row["nationality"].ToString();
                 txtAddress.Text = row["address"].ToString();
             }
+        }
+        private void LoadEnrolledSubjects(string userId)
+        {
+            // Lógica para obtener las asignaturas inscritas por el estudiante desde la base de datos
+            DataTable dt = GetEnrolledSubjects(userId);
+
+            // Vincular datos al GridView
+            gridSubjects.DataSource = dt;
+            gridSubjects.DataBind();
         }
 
         protected void btnSave_Click(object sender, EventArgs e)
@@ -94,7 +104,7 @@ namespace EnglishProyect.Student
                 return null;
             }
         }
-        private DataTable GetStudentInformationFromDatabase(string userId)
+        private DataTable GetStudentInformation(string userId)
         {
             DataTable dt = new DataTable();
 
@@ -152,6 +162,49 @@ namespace EnglishProyect.Student
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+        private DataTable GetEnrolledSubjects(string userId)
+        {
+            DataTable dt = new DataTable();
+
+            // Query para obtener las asignaturas en las que está inscrito el estudiante
+            string query = @"
+        SELECT
+            Subjects.subject_id AS SubjectID,
+            Subjects.name AS Name,
+            Subjects.semester AS Semester,
+            Subjects.credits AS Credits,
+            Teachers.name AS TeacherName
+        FROM
+            Subjects
+        JOIN
+            Students_s ON Subjects.subject_id = Students_s.subject_id
+        JOIN
+            Teachers_s ON Subjects.subject_id = Teachers_s.subject_id
+        JOIN
+            Users AS Teachers ON Teachers_s.number_id = Teachers.number_id
+        WHERE
+            Students_s.number_id = @UserId;
+    ";
+
+            // Conexión a la base de datos
+            string pathDB = Server.MapPath("~/bbddEnglish.db");
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + pathDB + ";Version=3"))
+            {
+                connection.Open();
+
+                using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+
+                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                    {
+                        adapter.Fill(dt);
+                    }
+                }
+            }
+
+            return dt;
         }
     }
 }

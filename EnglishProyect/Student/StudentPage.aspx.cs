@@ -121,31 +121,6 @@ namespace EnglishProyect.Student
             return dt;
         }
 
-
-        private DataTable GetStudentInformation(string userId)
-        {
-            // Lógica para obtener la información del estudiante desde la base de datos
-            DataTable dt = new DataTable();
-            string query = "SELECT * FROM Users WHERE number_id = @UserId";
-
-            string pathDB = Server.MapPath("~/bbddEnglish.db");
-            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + pathDB + ";Version=3"))
-            {
-                connection.Open();
-                using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
-                {
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
-                    {
-                        adapter.Fill(dt);
-                    }
-                }
-            }
-
-            return dt;
-        }
-
         private void SaveChangesInDatabase(string userId)
         {
             // Obtén los nuevos valores de los TextBoxes

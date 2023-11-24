@@ -7,25 +7,16 @@
     <title>Teacher Page</title>
 </head>
 <body>
-    <form runat="server">
-        <h2>Teacher Page</h2>
-
+    <form id="form1" runat="server">
         <div>
-            <h3>Subjects Taught</h3>
-            <asp:Repeater ID="rptSubjects" runat="server">
-                <ItemTemplate>
-                    <div>
-                        <p>Subject Name: <%# Eval("Name") %></p>
-                        <!-- Add more details as needed -->
-                        <asp:Repeater ID="rptStudents" runat="server">
-                            <ItemTemplate>
-                                <p>Student: <%# Eval("StudentName") %></p>
-                                <!-- Add more student details as needed -->
-                            </ItemTemplate>
-                        </asp:Repeater>
-                    </div>
-                </ItemTemplate>
-            </asp:Repeater>
+            <h1>Teacher Information</h1>
+            <label>Select Subject:</label>
+            <asp:ListBox ID="ListBoxSubjects" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ListBoxSubjects_SelectedIndexChanged">
+            </asp:ListBox>
+
+            <br />
+
+            <asp:GridView ID="GridStudents" runat="server" AutoGenerateColumns="True"></asp:GridView>
         </div>
     </form>
 </body>

@@ -99,13 +99,13 @@ namespace EnglishProyect
                 else
                 {
                     // Si pertenece a otro rol, enviar a una página de error.
-                    Response.Redirect("PaginaError.aspx");
+                  //  Response.Redirect("PaginaError.aspx");
                 }
             }
             else
             {
                 // La autenticación falló, puedes mostrar un mensaje de error o redirigir a una página de error.
-                Response.Redirect("PaginaError.aspx");
+               // Response.Redirect("PaginaError.aspx");
             }
         }
     }

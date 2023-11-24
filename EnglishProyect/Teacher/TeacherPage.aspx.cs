@@ -6,6 +6,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Data.SqlClient;
+using System.IO;
 
 namespace EnglishProyect.Teacher
 {
@@ -15,34 +17,74 @@ namespace EnglishProyect.Teacher
         {
             if (!IsPostBack)
             {
-                // Obtén el User ID del contexto de la sesión
-                string userId = GetUserIdSession();
+                // Se guarda el ID del profesor
+                string idDelProfesor = GetUserIdSession();
 
-                // Asegúrate de que el User ID no sea nulo o vacío antes de cargar la información
-                if (!string.IsNullOrEmpty(userId))
+                string pathDB = Server.MapPath("~/bbddEnglish.db");
+                using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + pathDB + ";Version=3"))
                 {
-                    LoadSubjectsTaught(userId);
+                    connection.Open();
+
+                    string query = @"SELECT DISTINCT S.name, S.semester, S.credits
+                                 FROM Subjects S
+                                 JOIN Teachers_s T ON S.subject_id = T.subject_id
+                                 WHERE T.number_id = @IdDelProfesor";
+
+                    using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                    {
+                        // Utilizar el parámetro específico para SQLite
+                        command.Parameters.AddWithValue("@IdDelProfesor", idDelProfesor);
+
+                        using (SQLiteDataReader reader = command.ExecuteReader())
+                        {
+                            ListBoxSubjects.DataSource = reader;
+                            ListBoxSubjects.DataTextField = "name";
+                            ListBoxSubjects.DataValueField = "name";
+                            ListBoxSubjects.DataBind();
+                        }
+                    }
                 }
             }
         }
 
-        private void LoadSubjectsTaught(string userId)
+        protected void ListBoxSubjects_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Lógica para cargar las asignaturas que enseña el profesor y los estudiantes inscritos
-            DataTable subjectsTable = GetSubjectsTaughtFromDatabase(userId);
+            // Obtener el ID del profesor
+            string idDelProfesor = GetUserIdSession();
 
-            rptSubjects.DataSource = subjectsTable;
-            rptSubjects.DataBind();
-        }
+            // Obtener la asignatura seleccionada
+            string selectedSubject = ListBoxSubjects.SelectedValue;
 
-        private DataTable GetSubjectsTaughtFromDatabase(string userId)
-        {
-            // Lógica para obtener las asignaturas que enseña el profesor y los estudiantes inscritos
-            // Utiliza userId para filtrar las asignaturas del profesor y las tablas relacionadas para obtener información de los estudiantes
-            // ...
+            // Realizar la consulta para obtener estudiantes de la asignatura seleccionada
+            string query = @"SELECT U.name, U.surname, U.number_id
+                         FROM Users U
+                         JOIN Students_s SS ON U.number_id = SS.number_id
+                         JOIN Subjects S ON SS.subject_id = S.subject_id
+                         JOIN Teachers_s T ON S.subject_id = T.subject_id
+                         WHERE T.number_id = @IdDelProfesor AND S.name = @SelectedSubject"
+            ;
 
-            // Retorna un DataTable con los datos de las asignaturas y estudiantes
-            return new DataTable();
+            string pathDB = Server.MapPath("~/bbddEnglish.db");
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + pathDB + ";Version=3"))
+            {
+                connection.Open();
+
+                using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@IdDelProfesor", idDelProfesor);
+                    command.Parameters.AddWithValue("@SelectedSubject", selectedSubject);
+
+                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    {
+                        DataTable dataTable = new DataTable();
+                        dataTable.Load(reader);
+
+                        // Actualizar la tabla de estudiantes con los resultados de la consulta
+                        GridStudents.DataSource = dataTable;
+                        GridStudents.DataBind();
+                    }
+                }
+            }
         }
 
         private string GetUserIdSession()
@@ -54,10 +96,10 @@ namespace EnglishProyect.Teacher
             else
             {
                 // Puedes manejar aquí la situación en la que el User ID no está en la sesión
-                // Puedes redirigir a la página de login u otro manejo de error
                 Response.Redirect("PaginaError.aspx");
                 return null;
             }
         }
     }
+
 }
